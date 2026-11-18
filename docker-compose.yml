@@ -1,0 +1,29 @@
+services:
+  api:
+    build: ./backend
+    container_name: streambit_api
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+    env_file:
+      - ./backend/.env
+    depends_on:
+      - db
+    restart: unless-stopped
+
+  db:
+    image: postgres:16-alpine
+    container_name: streambit_db
+    environment:
+      POSTGRES_USER: streambit_user
+      POSTGRES_PASSWORD: streambit_secret_dev
+      POSTGRES_DB: streambit_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - streambit_postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  streambit_postgres_data:
