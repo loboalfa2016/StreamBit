@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta, timezone
+import time
 import uuid
 import bcrypt
 import jwt
@@ -6,8 +7,11 @@ from jwt.exceptions import InvalidTokenError
 
 from app.core.config import settings
 
-# Almacén en memoria de tokens revocados (jti) para el logout
+# Almacén en memoria de tokens revocados (jti) para logout y tokens de un solo uso
 revoked_tokens: set[str] = set()
+
+# Control básico de abuso: {clave: [timestamps]}
+rate_limit_store: dict[str, list[float]] = {}
 
 
 def get_password_hash(password: str) -> str:
@@ -29,16 +33,30 @@ def create_access_token(subject: str, role: str) -> str:
     payload = {
         "sub": subject,
         "role": role,
+        "type": "access",
         "jti": str(uuid.uuid4()),
         "exp": expire,
     }
     return jwt.encode(payload, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
 
 
-def decode_access_token(token: str) -> dict | None:
+def create_action_token(subject: str, purpose: str, expire_minutes: int = 15) -> str:
+    expire = datetime.now(timezone.utc) + timedelta(minutes=expire_minutes)
+    payload = {
+        "sub": subject,
+        "type": purpose,  # "email_verify" o "password_reset"
+        "jti": str(uuid.uuid4()),
+        "exp": expire,
+    }
+    return jwt.encode(payload, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+
+
+def decode_access_token(token: str, expected_type: str = "access") -> dict | None:
     try:
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
         if payload.get("jti") in revoked_tokens:
+            return None
+        if payload.get("type") != expected_type:
             return None
         return payload
     except InvalidTokenError:
@@ -47,3 +65,14 @@ def decode_access_token(token: str) -> dict | None:
 
 def revoke_token(jti: str) -> None:
     revoked_tokens.add(jti)
+
+
+def check_rate_limit(key: str, max_requests: int = 3, window_seconds: int = 300) -> bool:
+    now = time.time()
+    timestamps = [t for t in rate_limit_store.get(key, []) if now - t < window_seconds]
+    if len(timestamps) >= max_requests:
+        rate_limit_store[key] = timestamps
+        return False
+    timestamps.append(now)
+    rate_limit_store[key] = timestamps
+    return True

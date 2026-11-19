@@ -39,3 +39,27 @@ class UserLogin(BaseModel):
 class TokenResponse(BaseModel):
     access_token: str
     token_type: str = "bearer"
+
+
+class EmailRequest(BaseModel):
+    email: EmailStr
+
+
+class VerifyEmailRequest(BaseModel):
+    token: str
+
+
+class ResetPasswordRequest(BaseModel):
+    token: str
+    new_password: str = Field(..., min_length=8, max_length=72)
+
+    @field_validator("new_password")
+    @classmethod
+    def validate_password_strength(cls, value: str) -> str:
+        if not re.search(r"[A-Z]", value):
+            raise ValueError("La contraseña debe contener al menos una letra mayúscula.")
+        if not re.search(r"[a-z]", value):
+            raise ValueError("La contraseña debe contener al menos una letra minúscula.")
+        if not re.search(r"\d", value):
+            raise ValueError("La contraseña debe contener al menos un número.")
+        return value
