@@ -15,10 +15,8 @@ services:
   db:
     image: postgres:16-alpine
     container_name: streambit_db
-    environment:
-      POSTGRES_USER: streambit_user
-      POSTGRES_PASSWORD: streambit_secret_dev
-      POSTGRES_DB: streambit_db
+    env_file:
+      - ./backend/.env
     ports:
       - "5432:5432"
     volumes:
