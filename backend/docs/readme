@@ -1,0 +1,38 @@
+#StreamBit - Backend API
+
+# StreamBit - Backend API
+
+Este repositorio contiene el backend del proyecto StreamBit, construido con **FastAPI** y **PostgreSQL**.
+
+## Estado del Proyecto
+
+### BE-01: Estructura inicial del backend y configuración por entornos (Completado)
+
+Se estableció la arquitectura base de la aplicación asegurando un entorno de desarrollo funcional y contenedorizado:
+
+- **Configuración del proyecto:** Creación de la estructura de carpetas modular (`app/core`, `app/api`, `app/models`) separando responsabilidades.
+- **Gestión de dependencias:** Definición del `requirements.txt` con FastAPI, Uvicorn y Pydantic-Settings.
+- **Variables de entorno:** Implementación de `app/core/config.py` para la carga de variables desde el archivo `.env`, asegurando que los secretos no se guarden en el repositorio.
+- **Punto de entrada:** Creación de `app/main.py` con el endpoint de validación `/health` (respondiendo exitosamente con el status "healthy") y documentación OpenAPI autogenerada.
+- **Dockerización:** Creación del `Dockerfile` para la API y un `docker-compose.yml` en la raíz para orquestar la API (puerto 8000) y la base de datos PostgreSQL (puerto 5432) de manera local.
+
+### Variables de entorno
+
+Antes de iniciar la aplicación, crea `backend/.env` a partir de `backend/.env.example` y configura `SECRET_KEY`, `POSTGRES_PASSWORD` y `TMDB_API_KEY`. El archivo `.env` está excluido de Git y de la imagen Docker; no publiques sus valores. Para generar una clave JWT segura, puedes usar `python -c "import secrets; print(secrets.token_hex(32))"`. Si una clave ya se publicó en GitHub, revócala y genera una nueva: quitarla del código actual no la elimina del historial.
+
+### BE-02: Modelo de datos inicial y persistencia (En progreso)
+
+Se adelantó la configuración del ORM y la conexión a la base de datos, pero falta completar la estructura de las entidades y la gestión de migraciones.
+
+**Lo que ya se hizo (Avance adelantado):**
+
+- **Dependencias de BD:** Instalación de `SQLAlchemy`, `asyncpg 0.30.0` (para compatibilidad asíncrona con Python 3.13) y `alembic`.
+- **Conexión Asíncrona:** Actualización de `config.py` con las credenciales de PostgreSQL y creación de `app/core/database.py` con el motor asíncrono y la fábrica de sesiones de SQLAlchemy.
+- **Modelo Inicial:** Creación del modelo `Movie` (con campos básicos y estado de disponibilidad) en `app/models/movie.py` y centralización de importaciones en `app/models/__init__.py`.
+
+**Lo que falta para finalizar la BE-02:**
+
+- **Modelos restantes:** Definir las entidades y relaciones faltantes para géneros, países, idiomas, fuentes, usuarios, comentarios y calificaciones.
+- **Configuración de Alembic:** Inicializar la herramienta de migraciones en el proyecto (ejecutando `alembic init`) y configurar el archivo `alembic/env.py` para que lea el objeto `Base` de nuestros modelos.
+- **Generación de Migraciones:** Ejecutar el comando para autogenerar la primera migración con la estructura de las tablas documentadas.
+- **Aplicación en BD:** Aplicar la migración a la base de datos limpia de PostgreSQL para crear físicamente las tablas e índices.
