@@ -1,7 +1,7 @@
 import re
 from datetime import datetime
 from pydantic import BaseModel, EmailStr, Field, field_validator, ConfigDict
-
+from typing import Literal
 
 class UserRegister(BaseModel):
     username: str = Field(..., min_length=3, max_length=50)
@@ -63,3 +63,6 @@ class ResetPasswordRequest(BaseModel):
         if not re.search(r"\d", value):
             raise ValueError("La contraseña debe contener al menos un número.")
         return value
+
+class UserRoleUpdate(BaseModel):
+    role: Literal["user", "moderator", "admin"]
