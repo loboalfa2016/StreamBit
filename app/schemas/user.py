@@ -65,4 +65,4 @@ class ResetPasswordRequest(BaseModel):
         return value
 
 class UserRoleUpdate(BaseModel):
-    role: Literal["user", "moderator", "admin"]
+    role: Literal["user", "admin", "catalog_manager", "ads_manager", "analyst"]
