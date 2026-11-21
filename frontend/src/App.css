@@ -1,0 +1,343 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: #0b0b0e;
+  color: #f4f4f6;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.app-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px 60px;
+}
+
+/* --- 1. NAVBAR --- */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0;
+  border-bottom: 1px solid #1f1f26;
+  margin-bottom: 32px;
+}
+
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.brand {
+  font-weight: 800;
+  font-size: 16px;
+  letter-spacing: 1px;
+  color: #fff;
+}
+
+.nav-links {
+  display: flex;
+  gap: 20px;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: #8e8e9a;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.nav-links a.active,
+.nav-links a:hover {
+  color: #ffffff;
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.search-input {
+  background: #141419;
+  border: 1px solid #262630;
+  padding: 8px 12px;
+  border-radius: 6px;
+  color: #fff;
+  font-size: 12px;
+  width: 200px;
+}
+
+.avatar-user {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #e11d48;
+  display: grid;
+  place-items: center;
+  font-weight: bold;
+  font-size: 13px;
+}
+
+/* --- 2. HERO DE PELÍCULA --- */
+.movie-hero {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 32px;
+  background: linear-gradient(135deg, #17151c 0%, #0e0e12 100%);
+  border: 1px solid #23232c;
+  border-radius: 12px;
+  padding: 28px;
+  margin-bottom: 24px;
+}
+
+.poster-box img {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #2d2d39;
+  display: block;
+}
+
+.poster-rating {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+  font-size: 13px;
+  font-weight: bold;
+  color: #fbbf24;
+}
+
+.poster-rating .views {
+  color: #8e8e9a;
+  font-weight: normal;
+}
+
+.badge-top {
+  display: inline-block;
+  font-size: 11px;
+  color: #a1a1aa;
+  background: #1c1c24;
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1px solid #2c2c38;
+  margin-bottom: 12px;
+}
+
+.movie-details h1 {
+  font-size: 36px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.tagline {
+  color: #a1a1aa;
+  font-style: italic;
+  font-size: 14px;
+  margin-bottom: 14px;
+}
+
+.meta-tags {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #a1a1aa;
+  margin-bottom: 16px;
+}
+
+.tag {
+  background: #1f1f27;
+  padding: 3px 8px;
+  border-radius: 4px;
+  color: #e4e4e7;
+  font-weight: 600;
+}
+
+.tag.age {
+  background: #7f1d1d;
+  color: #fca5a5;
+}
+
+.synopsis {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #d4d4d8;
+  max-width: 720px;
+  margin-bottom: 24px;
+}
+
+.action-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.btn-primary {
+  background-color: #e11d48;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  background-color: #be123c;
+}
+
+.btn-secondary {
+  background-color: #1c1c24;
+  color: #f4f4f6;
+  border: 1px solid #2e2e3a;
+  padding: 12px 18px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.btn-icon {
+  background-color: #1c1c24;
+  color: #f4f4f6;
+  border: 1px solid #2e2e3a;
+  width: 42px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+/* --- 3. PREMIOS Y CITA --- */
+.grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.info-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #131318;
+  border: 1px solid #22222b;
+  padding: 16px;
+  border-radius: 8px;
+}
+
+.card-icon {
+  font-size: 20px;
+}
+
+.info-card h4 {
+  font-size: 13px;
+  margin-bottom: 2px;
+}
+
+.info-card p {
+  font-size: 11px;
+  color: #8e8e9a;
+}
+
+.quote-box {
+  background: #131318;
+  border: 1px solid #22222b;
+  border-left: 3px solid #e11d48;
+  padding: 16px 20px;
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #a1a1aa;
+  font-style: italic;
+  margin-bottom: 36px;
+}
+
+/* --- 4. REPARTO PROTAGÓNICO --- */
+h3 {
+  font-size: 15px;
+  letter-spacing: 0.8px;
+  margin-bottom: 16px;
+  color: #f4f4f6;
+}
+
+.grid-7 {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.cast-card {
+  background: #131318;
+  border: 1px solid #22222b;
+  border-radius: 8px;
+  padding: 14px 10px;
+  text-align: center;
+}
+
+.cast-card img {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin: 0 auto 10px;
+  display: block;
+  border: 2px solid #2a2a35;
+}
+
+.cast-card h4 {
+  font-size: 12px;
+  margin-bottom: 4px;
+}
+
+.cast-card p {
+  font-size: 11px;
+  color: #8e8e9a;
+}
+
+.crew-grid {
+  margin-bottom: 36px;
+}
+
+/* --- 5. ESPECIFICACIONES DEL MASTER --- */
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.dark-card {
+  background: #131318;
+  border: 1px solid #22222b;
+  border-radius: 8px;
+  padding: 18px;
+}
+
+.spec-label {
+  display: block;
+  font-size: 10px;
+  font-weight: 700;
+  color: #e11d48;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+
+.dark-card h4 {
+  font-size: 14px;
+  margin-bottom: 6px;
+}
+
+.dark-card p {
+  font-size: 12px;
+  line-height: 1.5;
+  color: #8e8e9a;
+}
