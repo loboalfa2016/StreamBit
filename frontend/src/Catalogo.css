@@ -1,0 +1,73 @@
+.catalog-header {
+    max-width: 1200px;
+    margin: 40px auto 20px;
+    padding: 0 20px;
+}
+
+.catalog-title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.catalog-title-row h1 {
+    font-size: 2.2rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    margin: 8px 0 0;
+    color: #ffffff;
+}
+
+.sort-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #9ca3af;
+    font-size: 0.9rem;
+}
+
+.sort-select {
+    background-color: #16181e;
+    color: #ffffff;
+    border: 1px solid #2a2d37;
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    outline: none;
+}
+
+/* filtro */
+.filter-pills {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding-bottom: 10px;
+}
+
+.pill {
+    background-color: #16181e;
+    color: #b0b5c0;
+    border: 1px solid #262932;
+    padding: 8px 18px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+}
+
+.pill:hover {
+    border-color: #4b5563;
+    color: #ffffff;
+}
+
+.pill.active {
+    background-color: #e11d48;
+    border-color: #e11d48;
+    color: #ffffff;
+    font-weight: 600;
+}
