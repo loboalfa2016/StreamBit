@@ -29,6 +29,8 @@ class Source(Base):
     territories = Column(JSON, default=list, nullable=False)
     languages = Column(JSON, default=list, nullable=False)
     subtitles = Column(JSON, default=list, nullable=False)
+    audio_type = Column(String(50), nullable=True)  # Ej: "Latino", "Subtitulado", "Original"
+    expires_at = Column(DateTime(timezone=True), nullable=True, index=True)
     authorization_reference = Column(String(255), nullable=False)
     authorization_terms = Column(Text, nullable=True)
     is_active = Column(Boolean, default=True, nullable=False, index=True)
