@@ -5,3 +5,4 @@ from app.models.movie import Movie
 from app.models.source import Source
 from app.models.community import Comment, Rating 
 from app.models.sync_log import SyncLog 
+from app.models.availability_log import MovieAvailabilityLog

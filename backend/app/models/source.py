@@ -3,6 +3,7 @@ from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, DateTime, T
 from sqlalchemy.orm import relationship
 from app.core.database import Base
 
+
 class Source(Base):
     __tablename__ = "sources"
 
@@ -14,6 +15,7 @@ class Source(Base):
     subtitle_language_id = Column(Integer, ForeignKey("languages.id"), nullable=True)
     authorization_ref = Column(Text, nullable=True)  # Evidencia o referencia de autorización
     is_active = Column(Boolean, default=True, nullable=False, index=True)
+    is_verified = Column(Boolean, default=False, nullable=False, index=True)
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
 
     movie = relationship("Movie", back_populates="sources")
