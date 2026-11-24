@@ -4,6 +4,7 @@ from sqlalchemy.orm import relationship
 from app.core.database import Base
 from app.models.catalog import movie_genres, movie_countries
 
+
 class Movie(Base):
     __tablename__ = "movies"
 
@@ -24,3 +25,12 @@ class Movie(Base):
     sources = relationship("Source", back_populates="movie", cascade="all, delete-orphan")
     comments = relationship("Comment", back_populates="movie", cascade="all, delete-orphan")
     ratings = relationship("Rating", back_populates="movie", cascade="all, delete-orphan")
+    availability_logs = relationship(
+        "MovieAvailabilityLog",
+        back_populates="movie",
+        cascade="all, delete-orphan",
+    )
+
+    @property
+    def availability_status(self) -> str:
+        return "Disponible" if self.is_available else "Próximamente"
