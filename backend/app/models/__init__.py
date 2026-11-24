@@ -7,3 +7,4 @@ from app.models.source import Source
 from app.models.community import Comment, Rating 
 from app.models.sync_log import SyncLog 
 from app.models.availability_log import MovieAvailabilityLog
+from app.models.user_lists import Favorite, UserList, UserListItem
