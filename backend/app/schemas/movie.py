@@ -25,8 +25,6 @@ class MovieResponse(BaseModel):
     duration_minutes: int | None = None
     age_rating: str | None = None
     poster_url: str | None = None
-    original_language: str | None = None
-    director: str | None = None
     is_available: bool
     genres: list[GenreResponse] = []
     countries: list[CountryResponse] = []
