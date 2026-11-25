@@ -1,38 +1,216 @@
-#StreamBit - Backend API
+# StreamBit — Backend API
 
-# StreamBit - Backend API
+API REST para el catálogo, gestión de fuentes de reproducción, colecciones y experiencia de usuario de **StreamBit**.
 
-Este repositorio contiene el backend del proyecto StreamBit, construido con **FastAPI** y **PostgreSQL**.
+---
 
-## Estado del Proyecto
+## Stack Tecnológico
 
-### BE-01: Estructura inicial del backend y configuración por entornos (Completado)
+* **Framework:** FastAPI (Python 3.12, asíncrono)
+* **Base de datos:** PostgreSQL 15+ con SQLAlchemy (Async) y `asyncpg`
+* **Migraciones:** Alembic
+* **Autenticación y Seguridad:** JWT (Access Tokens), hashing de contraseñas y control de acceso por roles (`user` / `admin`)
+* **Contenedores:** Docker & Docker Compose (compatible con OrbStack y Docker Desktop)
 
-Se estableció la arquitectura base de la aplicación asegurando un entorno de desarrollo funcional y contenedorizado:
+---
 
-- **Configuración del proyecto:** Creación de la estructura de carpetas modular (`app/core`, `app/api`, `app/models`) separando responsabilidades.
-- **Gestión de dependencias:** Definición del `requirements.txt` con FastAPI, Uvicorn y Pydantic-Settings.
-- **Variables de entorno:** Implementación de `app/core/config.py` para la carga de variables desde el archivo `.env`, asegurando que los secretos no se guarden en el repositorio.
-- **Punto de entrada:** Creación de `app/main.py` con el endpoint de validación `/health` (respondiendo exitosamente con el status "healthy") y documentación OpenAPI autogenerada.
-- **Dockerización:** Creación del `Dockerfile` para la API y un `docker-compose.yml` en la raíz para orquestar la API (puerto 8000) y la base de datos PostgreSQL (puerto 5432) de manera local.
+## Puesta en Marcha Rápida
 
-### Variables de entorno
+1. **Clonar el repositorio y ubicarse en la rama `backend`:**
+   ```bash
+   git checkout backend
+   git pull origin backend
+   ```
 
-Antes de iniciar la aplicación, crea `backend/.env` a partir de `backend/.env.example` y configura `SECRET_KEY`, `POSTGRES_PASSWORD` y `TMDB_API_KEY`. El archivo `.env` está excluido de Git y de la imagen Docker; no publiques sus valores. Para generar una clave JWT segura, puedes usar `python -c "import secrets; print(secrets.token_hex(32))"`. Si una clave ya se publicó en GitHub, revócala y genera una nueva: quitarla del código actual no la elimina del historial.
+2. **Levantar los servicios y aplicar las migraciones:**
+   ```bash
+   docker compose up -d --build
+   sleep 3
+   docker compose exec api alembic upgrade head
+   ```
 
-### BE-02: Modelo de datos inicial y persistencia (En progreso)
+3. **Verificar que el servidor esté funcionando:**
+   * **Documentación interactiva (Swagger UI):** `http://localhost:8000/docs`
+   * **Health Check:** `GET http://localhost:8000/health`
 
-Se adelantó la configuración del ORM y la conexión a la base de datos, pero falta completar la estructura de las entidades y la gestión de migraciones.
+4. **Credenciales de prueba (Usuario Administrador):**
+   * **Email:** `emanuel@streambit.com`
+   * **Password:** `NewStreamBit2026`
 
-**Lo que ya se hizo (Avance adelantado):**
+---
 
-- **Dependencias de BD:** Instalación de `SQLAlchemy`, `asyncpg 0.30.0` (para compatibilidad asíncrona con Python 3.13) y `alembic`.
-- **Conexión Asíncrona:** Actualización de `config.py` con las credenciales de PostgreSQL y creación de `app/core/database.py` con el motor asíncrono y la fábrica de sesiones de SQLAlchemy.
-- **Modelo Inicial:** Creación del modelo `Movie` (con campos básicos y estado de disponibilidad) en `app/models/movie.py` y centralización de importaciones en `app/models/__init__.py`.
+## Estructura del Proyecto (`backend/`)
 
-**Lo que falta para finalizar la BE-02:**
+```text
+backend/
+├── alembic/
+│   ├── env.py                 # Configuración asíncrona de Alembic
+│   └── versions/              # Historial de migraciones de base de datos
+└── app/
+    ├── main.py                # Punto de entrada de FastAPI y registro de routers
+    ├── core/
+    │   ├── config.py          # Variables de entorno y configuración general
+    │   ├── database.py        # Engine async, SessionLocal y Base declarativa
+    │   └── security.py        # Generación/validación de JWT y contraseñas
+    ├── models/
+    │   ├── __init__.py        # Registro global de modelos para Alembic
+    │   ├── user.py            # Modelo de usuarios y roles
+    │   ├── movie.py           # Modelo de películas y metadatos
+    │   ├── catalog.py         # Géneros, países, idiomas y tablas intermedias
+    │   ├── source.py          # Proveedores, fuentes de reproducción y logs
+    │   └── user_lists.py      # Favoritos, listas personales e ítems de lista (BE-14)
+    ├── schemas/
+    │   ├── movie.py           # Esquemas de catálogo, filtros y paginación
+    │   ├── playback.py        # Esquemas de opciones de reproducción públicas
+    │   ├── collections.py     # Esquemas de película destacada y colecciones
+    │   └── user_lists.py      # Esquemas de favoritos y listas personales
+    └── api/
+        ├── auth.py            # Endpoints de autenticación y dependencia get_current_user
+        ├── movies.py          # Endpoints públicos de listado, búsqueda y detalle (BE-12)
+        └── v1/endpoints/
+            ├── playback.py    # Consulta pública de fuentes de reproducción (BE-11)
+            ├── collections.py # Película destacada y colecciones para Home (BE-13)
+            └── user_lists.py  # Gestión de favoritos y listas personales (BE-14)
+```
 
-- **Modelos restantes:** Definir las entidades y relaciones faltantes para géneros, países, idiomas, fuentes, usuarios, comentarios y calificaciones.
-- **Configuración de Alembic:** Inicializar la herramienta de migraciones en el proyecto (ejecutando `alembic init`) y configurar el archivo `alembic/env.py` para que lea el objeto `Base` de nuestros modelos.
-- **Generación de Migraciones:** Ejecutar el comando para autogenerar la primera migración con la estructura de las tablas documentadas.
-- **Aplicación en BD:** Aplicar la migración a la base de datos limpia de PostgreSQL para crear físicamente las tablas e índices.
+---
+
+## Historias de Usuario Implementadas (BE-01 a BE-14)
+
+### Módulo 1: Infraestructura, Base de Datos y Seguridad (BE-01 a BE-06)
+
+#### BE-01 — Infraestructura base y Health Check
+* Configuración del proyecto en FastAPI, contenedores Docker (`api` y `db`), conexión asíncrona a PostgreSQL y configuración de Alembic.
+* **Endpoint:** `GET /health`
+
+#### BE-02 — Modelado base de datos
+* Creación de las entidades fundamentales del sistema: `users`, `movies`, `genres`, `countries`, `languages`, `providers`, `sources`, `sync_logs`, `movie_availability_logs`, `comments` y `ratings`.
+
+#### BE-03 — Registro, Login y Sesión JWT
+* Gestión de ciclo de vida de sesión mediante tokens Bearer JWT.
+* **Endpoints:**
+  * `POST /api/v1/auth/register` — Registro de nuevos usuarios.
+  * `POST /api/v1/auth/login` — Inicio de sesión y emisión de token.
+  * `GET /api/v1/auth/me` — Consulta del perfil del usuario autenticado.
+  * `POST /api/v1/auth/logout` — Cierre de sesión.
+
+#### BE-04 — Verificación de correo y recuperación de contraseña
+* Flujos de verificación de cuenta y restablecimiento seguro de credenciales.
+* **Endpoints:**
+  * `POST /api/v1/auth/request-verification`
+  * `POST /api/v1/auth/verify-email`
+  * `POST /api/v1/auth/forgot-password`
+  * `POST /api/v1/auth/reset-password`
+
+#### BE-05 — Control de acceso basado en roles (RBAC) y gestión de usuarios
+* Protección de rutas administrativas y administración de roles (`user` / `admin`).
+* **Endpoints:**
+  * `GET /api/v1/admin/users` — Listado de usuarios registrados.
+  * `PATCH /api/v1/admin/users/{user_id}/role` — Cambio de rol de usuario.
+  * `GET /api/v1/admin/permissions/me` — Consulta de permisos efectivos del administrador.
+
+#### BE-06 — Analíticas administrativas
+* Métricas agregadas del sistema para el panel de administración.
+* **Endpoint:** `GET /api/v1/admin/analytics/summary`
+
+---
+
+### Módulo 2: Catálogo, Sincronización y Disponibilidad (BE-07 a BE-10)
+
+#### BE-07 — Sincronización de películas (TMDB) y consulta básica
+* Ingesta y actualización de metadatos de películas desde fuente externa con bitácora de ejecución.
+* **Endpoints:**
+  * `POST /api/v1/admin/sync/movies` — Disparo manual de sincronización.
+  * `GET /api/v1/admin/sync/logs` — Historial de sincronizaciones.
+  * `GET /api/v1/movies` — Listado paginado del catálogo.
+  * `GET /api/v1/movies/{movie_id}` — Detalle completo de una película.
+
+#### BE-08 — Gestión de proveedores y fuentes de reproducción (Admin)
+* Administración de plataformas proveedoras y enlaces/fuentes asociados a cada película.
+* **Endpoints:**
+  * `GET /api/v1/admin/providers` y `POST /api/v1/admin/providers`
+  * `POST /api/v1/admin/sources`
+  * `GET /api/v1/admin/movies/{movie_id}/sources`
+  * `PATCH /api/v1/admin/sources/{source_id}`
+  * `PATCH /api/v1/admin/sources/{source_id}/deactivate`
+
+#### BE-09 — Motor de disponibilidad y auditoría
+* Evaluación automática y manual del estado real de disponibilidad de cada película según sus fuentes activas, registrando historial de cambios.
+* Propiedad calculada `availability_status` (`"Disponible"` / `"Próximamente"`) expuesta en los esquemas de película.
+* **Endpoints:**
+  * `POST /api/v1/admin/movies/{movie_id}/availability/evaluate`
+  * `GET /api/v1/admin/movies/{movie_id}/availability/logs`
+
+#### BE-10 — Consolidación de permisos y saneamiento público de proveedores
+* Separación estricta entre esquemas internos de administración y esquemas públicos (`PublicProviderResponse`), asegurando que nunca se expongan credenciales ni claves internas.
+
+---
+
+### Módulo 3: Experiencia de Visitante y Usuario Registrado (BE-11 a BE-14)
+
+#### BE-11 — Consulta pública de opciones de reproducción
+* **Endpoint:** `GET /api/v1/movies/{movie_id}/playback-options`
+* **Funcionalidad:**
+  * Permite consultar servidores, idiomas y subtítulos disponibles para una película sin requerir autenticación.
+  * Filtra por territorio (`country`) e idioma (`language`), descarta automáticamente fuentes inactivas o caducadas (`expires_at`), y oculta referencias internas de autorización.
+
+#### BE-12 — Búsqueda, filtros combinables y ordenamiento en el catálogo
+* **Migración:** `bc6f63801088_add_director_cast_language_to_movies.py` (agregó `original_language`, `director` y `cast` en `movies`).
+* **Endpoint:** `GET /api/v1/movies`
+* **Funcionalidad:**
+  * Búsqueda parcial (`q`) sobre título, sinopsis, director y reparto (`cast`).
+  * Filtros combinables: `genre`, `year`, `country`, `language`, `director`, `actor` y `only_available`.
+  * Paginación (`page`, `page_size`) y ordenamiento seguro (`sort_by`, `order`) con respuesta estructurada incluso cuando no hay coincidencias (`items: []`, `total: 0`).
+
+#### BE-13 — Película destacada y colecciones del catálogo (Home)
+* **Migración:** `6f8856d157f3_add_published_featured_indie_to_movies.py` (agregó `is_published`, `is_featured` e `is_indie` en `movies`).
+* **Endpoints:**
+  * `GET /api/v1/catalog/featured` — Devuelve la película destacada activa (`is_featured=true`) o, como respaldo automático, la película publicada y disponible más reciente, explicando la regla aplicada en `selection_rule`.
+  * `GET /api/v1/catalog/collections` — Devuelve colecciones listas para la pantalla principal (**Populares**, **Clásicas**, **Independientes** y **Por género**), filtrando únicamente películas publicables (`is_published=true`), mostrando su estado real (`Disponible` / `Próximamente`) y soportando ordenamiento configurable (`sort_by`: `default`, `newest`, `oldest`, `title_asc`, `available_first`).
+
+#### BE-14 — Favoritos y listas personales
+* **Migración:** `add_favorites_and_user_lists` (creó las tablas `favorites`, `user_lists` y `user_list_items` con restricciones `UNIQUE` en `(user_id, movie_id)` y `(list_id, movie_id)`).
+* **Endpoints (todos protegidos con JWT y aislados por `current_user.id`):**
+  * **Favoritos:**
+    * `GET /api/v1/me/favorites` — Listar películas favoritas del usuario autenticado.
+    * `PUT /api/v1/me/favorites/{movie_id}` — Agregar película a favoritos (idempotente).
+    * `DELETE /api/v1/me/favorites/{movie_id}` — Quitar película de favoritos (idempotente).
+  * **Listas personales:**
+    * `GET /api/v1/me/lists` — Listar las listas propias con conteo de películas.
+    * `POST /api/v1/me/lists` — Crear una lista nueva (`201 Created`).
+    * `GET /api/v1/me/lists/{list_id}` — Ver detalle y películas de una lista propia.
+    * `PATCH /api/v1/me/lists/{list_id}` — Renombrar o editar descripción de una lista propia.
+    * `DELETE /api/v1/me/lists/{list_id}` — Eliminar una lista propia (`204 No Content`).
+    * `PUT /api/v1/me/lists/{list_id}/movies/{movie_id}` — Agregar película a una lista propia (idempotente).
+    * `DELETE /api/v1/me/lists/{list_id}/movies/{movie_id}` — Retirar película de una lista propia (idempotente).
+
+---
+
+## Guía Técnica para Continuar con BE-15 y BE-16
+
+Para el desarrollo de las historias finales del backend (**BE-15** y **BE-16**, enfocadas en calificaciones, comentarios/reseñas y moderación), ten en cuenta las siguientes convenciones ya establecidas en el proyecto:
+
+1. **Dependencia de usuario autenticado:**
+   Importa `get_current_user` directamente desde `app.api.auth`:
+   ```python
+   from app.api.auth import get_current_user
+   ```
+
+2. **Tablas existentes en PostgreSQL:**
+   Las tablas `comments` y `ratings` ya fueron creadas en las migraciones iniciales. Revisa sus modelos actuales en `backend/app/models/` antes de agregar columnas o generar nuevas migraciones.
+
+3. **Reglas para migraciones con Alembic:**
+   * Todo modelo nuevo o modificado debe estar importado en `backend/app/models/__init__.py` (o en `backend/alembic/env.py`) para que `--autogenerate` lo detecte.
+   * Si agregas columnas a tablas que ya tienen registros en la base de datos, define `nullable=True` o `server_default=text(...)` para evitar errores `NotNullViolationError` al ejecutar `ALTER TABLE`.
+   * Comandos estándar para migrar y reiniciar:
+     ```bash
+     docker compose exec api alembic revision --autogenerate -m "descripcion_del_cambio"
+     docker compose exec api alembic upgrade head
+     docker compose restart api
+     ```
+
+4. **Registro de nuevos routers:**
+   Registra los nuevos módulos de endpoints en `backend/app/main.py` manteniendo el prefijo estándar:
+   ```python
+   app.include_router(nuevo_router.router, prefix="/api/v1")
+   ```
