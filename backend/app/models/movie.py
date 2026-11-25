@@ -1,5 +1,5 @@
 from datetime import date, datetime, timezone
-from sqlalchemy import Column, Integer, String, Text, Boolean, Date, DateTime, JSON, text
+from sqlalchemy import Column, Integer, String, Text, Boolean, Date, DateTime
 from sqlalchemy.orm import relationship
 from app.core.database import Base
 from app.models.catalog import movie_genres, movie_countries
@@ -16,13 +16,7 @@ class Movie(Base):
     duration_minutes = Column(Integer, nullable=True)
     age_rating = Column(String(20), nullable=True)
     poster_url = Column(String(500), nullable=True)
-    original_language = Column(String(10), nullable=True, index=True)
-    director = Column(String(255), nullable=True, index=True)
-    cast = Column(JSON, default=list, nullable=True)
     is_available = Column(Boolean, default=False, nullable=False, index=True)
-    is_published = Column(Boolean, default=True, server_default=text("true"), nullable=False, index=True)
-    is_featured = Column(Boolean, default=False, server_default=text("false"), nullable=False, index=True)
-    is_indie = Column(Boolean, default=False, server_default=text("false"), nullable=False, index=True)
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
 
     # Relaciones
