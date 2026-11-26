@@ -27,6 +27,11 @@ class Settings(BaseSettings):
     # Configuración de calificaciones (BE-16)
     ALLOW_RATING_EDIT: bool = True
 
+    # Configuración de seguridad, CORS y retención (BE-25)
+    CORS_ORIGINS: str = "http://localhost:3000,http://localhost:5173"
+    HISTORY_RETENTION_DAYS: int = 180
+    NOTIFICATIONS_RETENTION_DAYS: int = 90
+
     @property
     def DATABASE_URI(self) -> str:
         # Construye la URL asíncrona: postgresql+asyncpg://user:password@server:port/db

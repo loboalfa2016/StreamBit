@@ -1,4 +1,5 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.api import auth, admin, movies 
 from app.api.v1.endpoints import availability
@@ -15,6 +16,7 @@ from app.api.v1.endpoints import recommendations
 from app.api.v1.endpoints import ads
 from app.api.v1.endpoints import admin_panel
 from app.api.v1.endpoints import reports
+from app.api.v1.endpoints import privacy
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -23,6 +25,28 @@ app = FastAPI(
     docs_url="/docs",
     redoc_url="/redoc"
 )
+
+cors_origins = [
+    origin.strip()
+    for origin in settings.CORS_ORIGINS.split(",")
+    if origin.strip()
+]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=cors_origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+@app.middleware("http")
+async def add_security_headers(request: Request, call_next):
+    response = await call_next(request)
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    return response
 
 app.include_router(auth.router)
 app.include_router(admin.router)
@@ -41,6 +65,7 @@ app.include_router(recommendations.router, prefix="/api/v1")
 app.include_router(ads.router, prefix="/api/v1")
 app.include_router(admin_panel.router, prefix="/api/v1")
 app.include_router(reports.router, prefix="/api/v1")
+app.include_router(privacy.router, prefix="/api/v1")
 @app.get("/health", tags=["Health"])
 async def health_check():
     return {
