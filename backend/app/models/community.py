@@ -22,9 +22,11 @@ class Comment(Base):
     user_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True, index=True)
     parent_id = Column(Integer, ForeignKey("comments.id", ondelete="CASCADE"), nullable=True, index=True)
     guest_name = Column(String(100), nullable=True)  # Para visitantes con nombre o anónimos
+    visitor_fingerprint = Column(String(255), nullable=True, index=True)
     content = Column(Text, nullable=False)
     is_hidden = Column(Boolean, default=False, nullable=False)
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+    updated_at = Column(DateTime(timezone=True), nullable=True)
 
     movie = relationship("Movie", back_populates="comments")
     user = relationship("User", back_populates="comments")

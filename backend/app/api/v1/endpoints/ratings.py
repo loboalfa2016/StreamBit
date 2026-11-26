@@ -1,5 +1,4 @@
 from datetime import datetime, timezone
-import hashlib
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
@@ -9,7 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.api.auth import get_optional_current_user
 from app.core.config import settings
 from app.core.database import get_db
-from app.core.security import check_rate_limit
+from app.core.security import build_visitor_fingerprint, check_rate_limit
 from app.models.community import Rating
 from app.models.movie import Movie
 from app.models.user import User
@@ -20,19 +19,6 @@ from app.schemas.ratings import (
 )
 
 router = APIRouter(prefix="/movies", tags=["Ratings"])
-
-
-def _build_visitor_fingerprint(request: Request) -> str:
-    visitor_id = request.headers.get("X-Visitor-Id", "").strip()
-    if visitor_id:
-        raw_identity = f"visitor:{visitor_id}"
-    else:
-        client_ip = request.client.host if request.client else "unknown"
-        user_agent = request.headers.get("user-agent", "")
-        raw_identity = f"anon:{client_ip}:{user_agent}"
-
-    salted = f"{settings.SECRET_KEY}:{raw_identity}".encode("utf-8")
-    return hashlib.sha256(salted).hexdigest()
 
 
 async def _ensure_movie_exists(db: AsyncSession, movie_id: int) -> None:
