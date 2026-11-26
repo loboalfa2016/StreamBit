@@ -16,6 +16,7 @@ ROLE_PERMISSIONS: dict[str, set[str]] = {
         "view_catalog_admin",
         "view_users",
         "view_audit_logs",
+        "view_analytics",
     },
     "catalog_manager": {
         "admin:read",
@@ -37,6 +38,7 @@ ROLE_PERMISSIONS: dict[str, set[str]] = {
         "view_users",
         "manage_notifications",
         "view_audit_logs",
+        "view_analytics",
     },
     "admin": {
         "admin:read",
@@ -57,6 +59,7 @@ ROLE_PERMISSIONS: dict[str, set[str]] = {
         "view_users",
         "manage_notifications",
         "view_audit_logs",
+        "view_analytics",
     },
 }
 
