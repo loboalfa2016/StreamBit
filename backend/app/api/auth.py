@@ -31,13 +31,11 @@ logging.basicConfig(level=logging.INFO)
 
 router = APIRouter(prefix="/api/v1/auth", tags=["Auth"])
 bearer_scheme = HTTPBearer()
+optional_bearer_scheme = HTTPBearer(auto_error=False)
 
 
-async def get_current_user(
-    credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
-    db: AsyncSession = Depends(get_db),
-) -> User:
-    payload = decode_access_token(credentials.credentials, expected_type="access")
+async def _resolve_user_from_token(token: str, db: AsyncSession) -> User:
+    payload = decode_access_token(token, expected_type="access")
     if not payload or "sub" not in payload:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -54,6 +52,22 @@ async def get_current_user(
             detail="Usuario no autorizado o inactivo.",
         )
     return user
+
+
+async def get_current_user(
+    credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
+    db: AsyncSession = Depends(get_db),
+) -> User:
+    return await _resolve_user_from_token(credentials.credentials, db)
+
+
+async def get_optional_current_user(
+    credentials: HTTPAuthorizationCredentials | None = Depends(optional_bearer_scheme),
+    db: AsyncSession = Depends(get_db),
+) -> User | None:
+    if credentials is None:
+        return None
+    return await _resolve_user_from_token(credentials.credentials, db)
 
 
 @router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)

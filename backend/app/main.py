@@ -7,6 +7,7 @@ from app.api.v1.endpoints import playback
 from app.api.v1.endpoints import collections
 from app.api.v1.endpoints import user_lists
 from app.api.v1.endpoints import history
+from app.api.v1.endpoints import ratings
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -25,6 +26,7 @@ app.include_router(playback.router, prefix="/api/v1")
 app.include_router(collections.router, prefix="/api/v1")
 app.include_router(user_lists.router, prefix="/api/v1")
 app.include_router(history.router, prefix="/api/v1")
+app.include_router(ratings.router, prefix="/api/v1")
 @app.get("/health", tags=["Health"])
 async def health_check():
     return {
