@@ -11,6 +11,7 @@ from app.api.v1.endpoints import ratings
 from app.api.v1.endpoints import comments
 from app.api.v1.endpoints import moderation
 from app.api.v1.endpoints import notifications
+from app.api.v1.endpoints import recommendations
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -33,6 +34,7 @@ app.include_router(ratings.router, prefix="/api/v1")
 app.include_router(comments.router, prefix="/api/v1")
 app.include_router(moderation.router, prefix="/api/v1")
 app.include_router(notifications.router, prefix="/api/v1")
+app.include_router(recommendations.router, prefix="/api/v1")
 @app.get("/health", tags=["Health"])
 async def health_check():
     return {
