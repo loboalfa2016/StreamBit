@@ -75,7 +75,7 @@ backend/
 
 ---
 
-## Historias de Usuario Implementadas (BE-01 a BE-14)
+## Historias de Usuario Implementadas (BE-01 a BE-26)
 
 ### Módulo 1: Infraestructura, Base de Datos y Seguridad (BE-01 a BE-06)
 
@@ -186,7 +186,37 @@ backend/
 
 ---
 
-## Guía Técnica para Continuar con BE-15 y BE-16
+### Módulo 4: Interacción, Notificaciones, Recomendaciones y Monetización (BE-15 a BE-22)
+
+* **BE-15 — Historial de actividad y visualización:** `POST /api/v1/me/history/events`, `GET /api/v1/me/history`, `DELETE /api/v1/me/history/{movie_id}`, `DELETE /api/v1/me/history` (tabla `watch_history`, sin IP/User-Agent, finalización verificada únicamente por proveedor).
+* **BE-16 — Calificaciones de películas:** `POST /api/v1/movies/{movie_id}/ratings`, `GET /api/v1/movies/{movie_id}/ratings/summary`, `DELETE /api/v1/movies/{movie_id}/ratings/me` (soporte para usuarios y visitantes con fingerprint SHA-256).
+* **BE-17 — Comentarios y respuestas:** `POST /api/v1/movies/{movie_id}/comments`, `GET /api/v1/movies/{movie_id}/comments`, `DELETE /api/v1/comments/{comment_id}` (máximo 1 nivel de anidación, antiduplicados de 5 minutos).
+* **BE-18 — Filtros antispam, denuncias y moderación:** `POST /api/v1/comments/{comment_id}/reports` y endpoints administrativos `/api/v1/admin/moderation/*` (`reports`, `hide`, `restore`, `delete`, `dismiss`, `logs`).
+* **BE-19 y BE-20 — Notificaciones de disponibilidad y respuestas:** `PUT/DELETE/GET /api/v1/me/availability-alerts*` y `/api/v1/me/notifications*` (`read`, `read-all`, `preferences`).
+* **BE-21 — Recomendaciones generales y personalizadas:** `GET /api/v1/recommendations` (estrategias `general`, `personalized` y `general_fallback` solo sobre películas publicadas y disponibles).
+* **BE-22 — Publicidad pre-roll y registro de impresiones:** `GET /api/v1/ads/preroll`, `POST /api/v1/ads/impressions` y gestión administrativa `/api/v1/admin/ads/*`.
+
+### Módulo 5: Operación, Analítica, Privacidad y Calidad (BE-23 a BE-26)
+
+* **BE-23 — Panel administrativo y auditoría:** `GET/PATCH /api/v1/admin/movies*`, `GET /api/v1/admin/users/search`, `PATCH /api/v1/admin/users/{user_id}/status`, `POST /api/v1/admin/notifications/broadcast` y `GET /api/v1/admin/audit-logs`.
+* **BE-24 — Métricas y reportes (solo lectura):** `GET /api/v1/admin/reports/overview`, `GET /api/v1/admin/reports/top-movies` y `GET /api/v1/admin/reports/ads-performance`.
+* **BE-25 — Auditoría, privacidad y protección de datos:** `GET /api/v1/privacy/policy`, `GET /api/v1/me/privacy/export`, `PATCH /api/v1/me/privacy/profile`, `DELETE /api/v1/me/privacy/account`, `POST /api/v1/admin/privacy/retention-cleanup`, CORS configurable y cabeceras HTTP de seguridad.
+* **BE-26 — Pruebas, rendimiento y documentación:**
+  * Suite automatizada con `pytest` en `backend/tests/` (`test_unit_domain.py`, `test_integration_core.py`, `test_external_failures.py`, `test_performance.py`).
+  * Contrato OpenAPI exportado en [openapi.json](file:///c:/Users/User/Desktop/Prog/Streambit/backend/docs/openapi.json).
+  * Colección de ejemplos lista para REST Client / Postman en [api_examples.http](file:///c:/Users/User/Desktop/Prog/Streambit/backend/docs/api_examples.http).
+
+---
+
+## Ejecución de Pruebas (`pytest`)
+
+```bash
+docker compose exec api pytest -v
+```
+
+---
+
+## Guía Técnica de Convenciones Backend
 
 Para el desarrollo de las historias finales del backend (**BE-15** y **BE-16**, enfocadas en calificaciones, comentarios/reseñas y moderación), ten en cuenta las siguientes convenciones ya establecidas en el proyecto:
 

@@ -1,0 +1,182 @@
+@baseUrl = http://localhost:8000
+@token = replace-with-jwt-token
+@adminToken = replace-with-admin-jwt-token
+@movieId = 1
+@sourceId = 1
+@commentId = 1
+
+### Health Check
+GET {{baseUrl}}/health
+
+### ==========================================
+### AUTH (BE-03 / BE-04)
+### ==========================================
+
+### Registro de usuario
+POST {{baseUrl}}/api/v1/auth/register
+Content-Type: application/json
+
+{
+  "username": "usuario_demo",
+  "email": "demo@streambit.com",
+  "password": "DemoPassword123!"
+}
+
+### Login
+POST {{baseUrl}}/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "email": "demo@streambit.com",
+  "password": "DemoPassword123!"
+}
+
+### Perfil actual
+GET {{baseUrl}}/api/v1/auth/me
+Authorization: Bearer {{token}}
+
+### ==========================================
+### CATÁLOGO Y REPRODUCCIÓN (BE-11 / BE-12 / BE-13)
+### ==========================================
+
+### Buscar películas disponibles
+GET {{baseUrl}}/api/v1/movies?q=matrix&only_available=true&page=1&page_size=20
+
+### Película destacada y colecciones Home
+GET {{baseUrl}}/api/v1/catalog/featured
+###
+GET {{baseUrl}}/api/v1/catalog/collections
+
+### Opciones de reproducción públicas
+GET {{baseUrl}}/api/v1/movies/{{movieId}}/playback-options?country=CO
+
+### ==========================================
+### FAVORITOS, LISTAS E HISTORIAL (BE-14 / BE-15)
+### ==========================================
+
+### Agregar a favoritos
+PUT {{baseUrl}}/api/v1/me/favorites/{{movieId}}
+Authorization: Bearer {{token}}
+
+### Crear lista personal
+POST {{baseUrl}}/api/v1/me/lists
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Fin de semana",
+  "description": "Películas pendientes"
+}
+
+### Registrar evento de reproducción
+POST {{baseUrl}}/api/v1/me/history/events
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "movie_id": {{movieId}},
+  "source_id": {{sourceId}},
+  "event": "started",
+  "position_seconds": 0,
+  "duration_seconds": 7200
+}
+
+### Consultar historial
+GET {{baseUrl}}/api/v1/me/history?page=1&page_size=20
+Authorization: Bearer {{token}}
+
+### ==========================================
+### CALIFICACIONES, COMENTARIOS Y MODERACIÓN (BE-16 / BE-17 / BE-18)
+### ==========================================
+
+### Calificar película (visitante o usuario)
+POST {{baseUrl}}/api/v1/movies/{{movieId}}/ratings
+X-Visitor-Id: guest-demo-1
+Content-Type: application/json
+
+{
+  "score": 5
+}
+
+### Resumen de calificaciones
+GET {{baseUrl}}/api/v1/movies/{{movieId}}/ratings/summary
+
+### Publicar comentario
+POST {{baseUrl}}/api/v1/movies/{{movieId}}/comments
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "content": "Excelente fotografía y sonido."
+}
+
+### Listar comentarios
+GET {{baseUrl}}/api/v1/movies/{{movieId}}/comments?page=1&page_size=20
+
+### Denunciar comentario
+POST {{baseUrl}}/api/v1/comments/{{commentId}}/reports
+X-Visitor-Id: guest-demo-1
+Content-Type: application/json
+
+{
+  "reason": "spoilers",
+  "details": "Revela el final sin aviso."
+}
+
+### Cola de moderación (Admin / Analyst)
+GET {{baseUrl}}/api/v1/admin/moderation/reports?status=pending
+Authorization: Bearer {{adminToken}}
+
+### ==========================================
+### NOTIFICACIONES Y RECOMENDACIONES (BE-19 / BE-20 / BE-21)
+### ==========================================
+
+### Activar alerta de disponibilidad
+PUT {{baseUrl}}/api/v1/me/availability-alerts/{{movieId}}
+Authorization: Bearer {{token}}
+
+### Bandeja de notificaciones
+GET {{baseUrl}}/api/v1/me/notifications?only_unread=true
+Authorization: Bearer {{token}}
+
+### Recomendaciones generales o personalizadas
+GET {{baseUrl}}/api/v1/recommendations?limit=10
+Authorization: Bearer {{token}}
+
+### ==========================================
+### PUBLICIDAD PRE-ROLL (BE-22)
+### ==========================================
+
+### Solicitar anuncio pre-roll
+GET {{baseUrl}}/api/v1/ads/preroll?movie_id={{movieId}}&source_id={{sourceId}}&playback_session_id=sess-1234&country=CO
+
+### Registrar impresión pre-roll
+POST {{baseUrl}}/api/v1/ads/impressions
+Content-Type: application/json
+
+{
+  "campaign_id": 1,
+  "movie_id": {{movieId}},
+  "source_id": {{sourceId}},
+  "playback_session_id": "sess-1234",
+  "event_type": "impression"
+}
+
+### ==========================================
+### PANEL ADMIN, REPORTES Y PRIVACIDAD (BE-23 / BE-24 / BE-25)
+### ==========================================
+
+### Listado administrativo de películas
+GET {{baseUrl}}/api/v1/admin/movies?page=1&page_size=20
+Authorization: Bearer {{adminToken}}
+
+### Reporte general (Admin / Analyst)
+GET {{baseUrl}}/api/v1/admin/reports/overview
+Authorization: Bearer {{adminToken}}
+
+### Política de privacidad pública
+GET {{baseUrl}}/api/v1/privacy/policy
+
+### Exportar datos personales
+GET {{baseUrl}}/api/v1/me/privacy/export
+Authorization: Bearer {{token}}

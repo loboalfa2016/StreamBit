@@ -21,7 +21,11 @@ from app.api.v1.endpoints import privacy
 app = FastAPI(
     title=settings.PROJECT_NAME,
     version=settings.VERSION,
-    description="API REST para el catálogo y reproducción de StreamBit",
+    description=(
+        "API REST oficial de StreamBit para gestión de catálogo cinematográfico, "
+        "disponibilidad por fuentes autorizadas, reproducción pre-roll, comunidad, "
+        "notificaciones, recomendaciones, analítica y privacidad."
+    ),
     docs_url="/docs",
     redoc_url="/redoc"
 )
