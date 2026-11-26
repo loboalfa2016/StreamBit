@@ -10,8 +10,10 @@ from app.api.auth import get_current_user, get_optional_current_user
 from app.core.database import get_db
 from app.core.security import build_visitor_fingerprint, check_rate_limit
 from app.models.community import Comment
+from app.models.moderation import CommentReport
 from app.models.movie import Movie
 from app.models.user import User
+from app.services.moderation import evaluate_comment_content
 from app.schemas.comments import (
     CommentCreateRequest,
     CommentListResponse,
@@ -140,6 +142,8 @@ async def create_comment(
             detail="Ya publicaste este mismo comentario recientemente.",
         )
 
+    is_spam, spam_reason = evaluate_comment_content(payload.content)
+
     new_comment = Comment(
         movie_id=movie_id,
         user_id=current_user.id if current_user else None,
@@ -147,8 +151,22 @@ async def create_comment(
         guest_name=None if current_user else payload.guest_name,
         parent_id=payload.parent_id,
         content=payload.content,
+        is_hidden=is_spam,
     )
     db.add(new_comment)
+    await db.flush()
+
+    if is_spam:
+        auto_report = CommentReport(
+            comment_id=new_comment.id,
+            reporter_user_id=current_user.id if current_user else None,
+            reporter_fingerprint=visitor_fp,
+            reason="auto_spam",
+            details=spam_reason,
+            status="pending",
+        )
+        db.add(auto_report)
+
     await db.commit()
 
     stmt = (

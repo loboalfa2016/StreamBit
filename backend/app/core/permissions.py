@@ -11,6 +11,7 @@ ROLE_PERMISSIONS: dict[str, set[str]] = {
         "catalog:read",
         "ads:read",
         "analytics:read",
+        "view_moderation",
     },
     "catalog_manager": {
         "admin:read",
@@ -31,6 +32,8 @@ ROLE_PERMISSIONS: dict[str, set[str]] = {
         "ads:read",
         "ads:write",
         "analytics:read",
+        "view_moderation",
+        "moderate_comments",
     },
 }
 

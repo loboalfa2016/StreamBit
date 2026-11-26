@@ -9,3 +9,4 @@ from app.models.sync_log import SyncLog
 from app.models.availability_log import MovieAvailabilityLog
 from app.models.user_lists import Favorite, UserList, UserListItem
 from app.models.watch_history import WatchHistory
+from app.models.moderation import CommentReport, ModerationLog
