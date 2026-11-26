@@ -13,6 +13,7 @@ from app.api.v1.endpoints import moderation
 from app.api.v1.endpoints import notifications
 from app.api.v1.endpoints import recommendations
 from app.api.v1.endpoints import ads
+from app.api.v1.endpoints import admin_panel
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -37,6 +38,7 @@ app.include_router(moderation.router, prefix="/api/v1")
 app.include_router(notifications.router, prefix="/api/v1")
 app.include_router(recommendations.router, prefix="/api/v1")
 app.include_router(ads.router, prefix="/api/v1")
+app.include_router(admin_panel.router, prefix="/api/v1")
 @app.get("/health", tags=["Health"])
 async def health_check():
     return {

@@ -13,11 +13,17 @@ ROLE_PERMISSIONS: dict[str, set[str]] = {
         "analytics:read",
         "view_moderation",
         "view_ads_reports",
+        "view_catalog_admin",
+        "view_users",
+        "view_audit_logs",
     },
     "catalog_manager": {
         "admin:read",
         "catalog:read",
         "catalog:write",
+        "manage_catalog",
+        "view_catalog_admin",
+        "manage_notifications",
     },
     "ads_manager": {
         "admin:read",
@@ -25,6 +31,12 @@ ROLE_PERMISSIONS: dict[str, set[str]] = {
         "ads:write",
         "manage_ads",
         "view_ads_reports",
+        "manage_catalog",
+        "view_catalog_admin",
+        "manage_users",
+        "view_users",
+        "manage_notifications",
+        "view_audit_logs",
     },
     "admin": {
         "admin:read",
@@ -39,6 +51,12 @@ ROLE_PERMISSIONS: dict[str, set[str]] = {
         "moderate_comments",
         "manage_ads",
         "view_ads_reports",
+        "manage_catalog",
+        "view_catalog_admin",
+        "manage_users",
+        "view_users",
+        "manage_notifications",
+        "view_audit_logs",
     },
 }
 

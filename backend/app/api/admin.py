@@ -8,6 +8,7 @@ from app.core.permissions import require_permission, ROLE_PERMISSIONS
 from app.models.user import User
 from app.models.sync_log import SyncLog
 from app.schemas.user import UserResponse, UserRoleUpdate
+from app.services.audit import record_admin_audit
 from app.services.tmdb_sync import sync_movies_from_tmdb
 
 logger = logging.getLogger("streambit.admin")
@@ -52,6 +53,15 @@ async def update_user_role(
 
     old_role = target_user.role
     target_user.role = role_in.role
+    await record_admin_audit(
+        db=db,
+        actor_user_id=current_admin.id,
+        action="user_role_updated",
+        resource_type="user",
+        resource_id=str(target_user.id),
+        details={"old_role": old_role, "new_role": target_user.role},
+        commit=False,
+    )
     await db.commit()
     await db.refresh(target_user)
 

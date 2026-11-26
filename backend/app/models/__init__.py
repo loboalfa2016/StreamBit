@@ -12,3 +12,4 @@ from app.models.watch_history import WatchHistory
 from app.models.moderation import CommentReport, ModerationLog
 from app.models.notifications import MovieAvailabilityAlert, Notification
 from app.models.ads import AdCampaign, AdImpression
+from app.models.audit_log import AdminAuditLog
