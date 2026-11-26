@@ -14,6 +14,7 @@ from app.models.moderation import CommentReport
 from app.models.movie import Movie
 from app.models.user import User
 from app.services.moderation import evaluate_comment_content
+from app.services.notifications import notify_comment_reply
 from app.schemas.comments import (
     CommentCreateRequest,
     CommentListResponse,
@@ -24,15 +25,16 @@ from app.schemas.comments import (
 router = APIRouter(tags=["Comments"])
 
 
-async def _ensure_movie_exists(db: AsyncSession, movie_id: int) -> None:
-    exists = (
-        await db.execute(select(Movie.id).where(Movie.id == movie_id))
+async def _ensure_movie_exists(db: AsyncSession, movie_id: int) -> Movie:
+    movie = (
+        await db.execute(select(Movie).where(Movie.id == movie_id))
     ).scalar_one_or_none()
-    if not exists:
+    if not movie:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Película no encontrada.",
         )
+    return movie
 
 
 def _resolve_author(comment: Comment) -> tuple[str, bool]:
@@ -85,7 +87,7 @@ async def create_comment(
     current_user: Optional[User] = Depends(get_optional_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    await _ensure_movie_exists(db, movie_id)
+    movie = await _ensure_movie_exists(db, movie_id)
 
     visitor_fp = None if current_user else build_visitor_fingerprint(request)
     rate_key = (
@@ -99,6 +101,7 @@ async def create_comment(
             detail="Demasiados comentarios en poco tiempo. Intenta nuevamente en un minuto.",
         )
 
+    parent: Optional[Comment] = None
     if payload.parent_id is not None:
         parent = (
             await db.execute(
@@ -175,6 +178,10 @@ async def create_comment(
         .where(Comment.id == new_comment.id)
     )
     created = (await db.execute(stmt)).scalar_one()
+
+    if parent is not None and not created.is_hidden:
+        await notify_comment_reply(db, parent, created, movie.title)
+
     return _to_comment_response(created, replies=[])
 
 
@@ -190,7 +197,7 @@ async def list_movie_comments(
     page_size: int = Query(default=20, ge=1, le=100),
     db: AsyncSession = Depends(get_db),
 ):
-    await _ensure_movie_exists(db, movie_id)
+    movie = await _ensure_movie_exists(db, movie_id)
 
     total = (
         await db.execute(
