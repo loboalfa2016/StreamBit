@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 
-from sqlalchemy import Boolean, Column, DateTime, Integer, String, UniqueConstraint
+from sqlalchemy import Boolean, Column, DateTime, Integer, String, UniqueConstraint, text
 from sqlalchemy.orm import relationship
 
 from app.core.database import Base
@@ -15,6 +15,7 @@ class Provider(Base):
     code = Column(String(100), unique=True, index=True, nullable=False)
     base_url = Column(String(500), nullable=True)
     is_active = Column(Boolean, default=True, nullable=False)
+    allows_preroll_ads = Column(Boolean, default=False, server_default=text("false"), nullable=False)
     created_at = Column(
         DateTime(timezone=True),
         default=lambda: datetime.now(timezone.utc),

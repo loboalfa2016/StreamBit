@@ -11,3 +11,4 @@ from app.models.user_lists import Favorite, UserList, UserListItem
 from app.models.watch_history import WatchHistory
 from app.models.moderation import CommentReport, ModerationLog
 from app.models.notifications import MovieAvailabilityAlert, Notification
+from app.models.ads import AdCampaign, AdImpression
