@@ -24,6 +24,14 @@ class Settings(BaseSettings):
     TMDB_BASE_URL: str = "https://api.themoviedb.org/3"
     SYNC_INTERVAL_HOURS: int = 24
 
+    # Configuración de calificaciones (BE-16)
+    ALLOW_RATING_EDIT: bool = True
+
+    # Configuración de seguridad, CORS y retención (BE-25)
+    CORS_ORIGINS: str = "http://localhost:3000,http://localhost:5173"
+    HISTORY_RETENTION_DAYS: int = 180
+    NOTIFICATIONS_RETENTION_DAYS: int = 90
+
     @property
     def DATABASE_URI(self) -> str:
         # Construye la URL asíncrona: postgresql+asyncpg://user:password@server:port/db

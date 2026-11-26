@@ -5,6 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.movie import Movie
 from app.models.source import Source
 from app.models.availability_log import MovieAvailabilityLog
+from app.services.notifications import notify_movie_became_available
 
 
 def _status_label(is_available: bool) -> str:
@@ -60,6 +61,9 @@ async def recalculate_movie_availability(
     await db.commit()
     await db.refresh(movie)
     await db.refresh(log_entry)
+
+    if not previous_is_available and new_is_available:
+        await notify_movie_became_available(db, movie, event_ref=str(log_entry.id))
 
     return movie, valid_sources_count, True, log_entry
 

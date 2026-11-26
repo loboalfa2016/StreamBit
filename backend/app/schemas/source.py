@@ -23,6 +23,7 @@ class ProviderCreate(BaseModel):
     code: ProviderCode
     base_url: Annotated[str, StringConstraints(max_length=500)] | None = None
     is_active: bool = True
+    allows_preroll_ads: bool = False
 
 
 class ProviderResponse(BaseModel):
@@ -31,6 +32,7 @@ class ProviderResponse(BaseModel):
     code: str
     base_url: str | None = None
     is_active: bool
+    allows_preroll_ads: bool
     created_at: datetime
 
     model_config = ConfigDict(from_attributes=True)

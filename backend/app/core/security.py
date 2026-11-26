@@ -1,7 +1,9 @@
 from datetime import datetime, timedelta, timezone
+import hashlib
 import time
 import uuid
 import bcrypt
+from fastapi import Request
 import jwt
 from jwt.exceptions import InvalidTokenError
 
@@ -76,3 +78,16 @@ def check_rate_limit(key: str, max_requests: int = 3, window_seconds: int = 300)
     timestamps.append(now)
     rate_limit_store[key] = timestamps
     return True
+
+
+def build_visitor_fingerprint(request: Request) -> str:
+    visitor_id = request.headers.get("X-Visitor-Id", "").strip()
+    if visitor_id:
+        raw_identity = f"visitor:{visitor_id}"
+    else:
+        client_ip = request.client.host if request.client else "unknown"
+        user_agent = request.headers.get("user-agent", "")
+        raw_identity = f"anon:{client_ip}:{user_agent}"
+
+    salted = f"{settings.SECRET_KEY}:{raw_identity}".encode("utf-8")
+    return hashlib.sha256(salted).hexdigest()
